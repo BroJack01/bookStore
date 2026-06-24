@@ -270,9 +270,15 @@
       line-height: 1.4;
       margin-top: 4px;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      cursor: pointer;
+    }
+    .book-blurb.expanded {
+      display: block;
+      -webkit-line-clamp: unset;
+      overflow: visible;
     }
 
     /* ===== STICKY BAR ===== */
@@ -628,9 +634,6 @@
   <div class="hero">
     <h1>Words that <em>work</em> on you<br>long after you close the book.</h1>
     <p>Select one or more books, fill in your details, and we handle the rest.</p>
-    <p style="margin-top:12px;font-size:13px;color:#8A5E00;background:rgba(240,165,0,0.07);border:1px solid rgba(240,165,0,0.18);border-radius:8px;padding:10px 16px;display:inline-block;max-width:420px;">
-      One free book per order. If more than one is selected, your order will not be processed.
-    </p>
   </div>
 
   <!-- CATALOG -->
@@ -738,7 +741,7 @@
 
   <script>
     // ===== CONFIG — paste your GAS Web App URL here after deploying =====
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbx5m26rPAuue-d4wUVKPo6yIfYYlWVmsxpW_Qa0zszLy8y9eTa7iqHOIwZwmp5paoRr/exec';
+    const GAS_URL = 'YOUR_GAS_WEB_APP_URL_HERE';
     // ====================================================================
 
     let allBooks    = [];
@@ -789,6 +792,14 @@
       // Attach click handlers
       catalog.querySelectorAll('.book-card').forEach(card => {
         card.addEventListener('click', () => toggleBook(card.dataset.id));
+      });
+
+      // Blurb expand/collapse
+      catalog.querySelectorAll('.book-blurb').forEach(blurb => {
+        blurb.addEventListener('click', e => {
+          e.stopPropagation();
+          blurb.classList.toggle('expanded');
+        });
       });
     }
 
@@ -900,9 +911,6 @@
 
       const books = getSelectedBooks();
       if(!books.length)           return showError('No books selected.');
-
-      const freeCount = books.filter(b => b.is_free || b.price == 0).length;
-      if(freeCount > 1)           return showError('Only one free book is allowed per order. Please remove the extra free selection.');
 
       btn.classList.add('loading');
       btn.disabled = true;
